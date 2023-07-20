@@ -28,4 +28,4 @@ function randomCoordinate(min = 1, max = 10) {
     }`;
 }
 
-module.exports = player;
+export { player };
