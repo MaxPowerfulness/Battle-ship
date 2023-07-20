@@ -1,0 +1,63 @@
+/* Custom Properties */
+:root {
+    --default-font: 1rem;
+    --small-spacing: 15px;
+}
+
+/* General */
+
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-size: var(--default-font);
+}
+
+body {
+    height: 100vh;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+/* Name Menu */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Game menu */
+#grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+
+    background-color: aqua;
+
+    flex-grow: 1;
+    height: 500px;
+    width: 500px;
+}
+
+.name-cont {
+    display: flex;
+    justify-content: space-between;
+    width: 1015px; /*Change this when resizing grid sizes*/
+}
+
+.grid-cont {
+    display: flex;
+    gap: var(--small-spacing);
+}
+
+.grid-item {
+    border: 1px solid black;
+}
+
+.grid-item:hover {
+    cursor: grab;
+}
