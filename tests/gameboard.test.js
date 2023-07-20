@@ -18,7 +18,7 @@ test('Detects attack missing a ship', () => {
 test('Tracks hit on correct ship', () => {
     const ship3 = game.placeShip([6, 1], [9, 1], 4, 'Long');
     game.recieveAttack(6, 1);
-    expect(game.shipLocations.Long.ship.getNumHits()).toBe(1);
+    expect(game.boardInformation.Long.ship.getNumHits()).toBe(1);
 });
 
 /////
