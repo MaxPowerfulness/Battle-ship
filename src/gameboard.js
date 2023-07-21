@@ -39,11 +39,6 @@ const gameboard = () => {
         return false;
     };
 
-    // Displays the array 'missedShots'
-    const displayMissedShots = () => {
-        return missedShots;
-    };
-
     // Traverses object and checks the sunk status of each ship. If all are sunken, returns true.
     const statusOfShips = () => {
         for (let ship in boardInformation) {
@@ -58,7 +53,7 @@ const gameboard = () => {
         boardInformation,
         placeShip,
         recieveAttack,
-        displayMissedShots,
+        missedShots,
         statusOfShips,
     };
 };

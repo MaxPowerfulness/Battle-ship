@@ -26,7 +26,7 @@ test('Tracks hit on correct ship', () => {
 test('Tracks/displays all missed shots', () => {
     game.recieveAttack(10, 20);
     game.recieveAttack(11, 21);
-    expect(game.displayMissedShots()).toEqual(['2, 8', '10, 20', '11, 21']);
+    expect(game.missedShots).toEqual(['2, 8', '10, 20', '11, 21']);
 });
 
 test('Reports true when all ships have sunk', () => {
