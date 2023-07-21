@@ -33,7 +33,9 @@ function displayGame() {
     const player2Name = document.createElement('p');
     const player1Grid = document.createElement('div');
     const player2Grid = document.createElement('div');
-    player2Grid.gameData = player('name'); // Get name from local storage
+    // Creates and assigns gameboards to each grid
+    player1Grid.gameData = player('name'); //Get name from local storage
+    player2Grid.gameData = player('name');
 
     player1Grid.setAttribute('id', 'grid');
     player2Grid.setAttribute('id', 'grid');
@@ -50,6 +52,7 @@ function displayGame() {
     gridContainer.append(player1Grid, player2Grid);
 }
 
+// A function that takes each player's grid element as parameters. Assigns coordinates to each grid item as well as click-to-attack capabilities for the enemy board.
 function createGrid(player1Grid, player2Grid) {
     let x = 0;
     let y = 0;
@@ -59,23 +62,50 @@ function createGrid(player1Grid, player2Grid) {
             x = 0;
             y++;
         }
+
         const gridItems = [
             document.createElement('div'),
             document.createElement('div'),
         ];
+
+        // Assigns coordinates to each grid item
         gridItems.forEach((item) => {
             item.classList.add('grid-item');
             item.setAttribute('data-x', x);
             item.setAttribute('data-y', y);
         });
+
+        // Add event listner for player1 grid
+
+        // Event listener for player2 grid
         gridItems[1].addEventListener('click', () => {
+            // Sends an attack to the players board based on the grid location clicked
             player2Grid.gameData.playerBoard.recieveAttack(
                 gridItems[1].dataset.x,
                 gridItems[1].dataset.y,
             );
-            console.log('attack sent');
-            console.log(player2Grid.gameData.playerBoard.displayMissedShots());
-        }); // Add recieve attack function with coordinate location as param
+
+            // Updates moves made by player1
+            player1Grid.gameData.movesMade.push(
+                `${gridItems[1].dataset.x}, ${gridItems[1].dataset.y}`,
+            );
+
+            //Updtes grid item with red circle if hit, grey circle if miss
+            const hitMark = document.createElement('span');
+            if (
+                `${gridItems[1].dataset.x}, ${gridItems[1].dataset.y}` ===
+                player2Grid.gameData.playerBoard.missedShots[
+                    player2Grid.gameData.playerBoard.missedShots.length - 1
+                ]
+            ) {
+                hitMark.classList.add('circle-miss');
+                gridItems[1].append(hitMark);
+            } else {
+                gridItems[1].classList.add('circle-hit');
+            }
+
+            gridItems[1].style['pointerEvents'] = 'none';
+        });
 
         player1Grid.appendChild(gridItems[0]);
         player2Grid.appendChild(gridItems[1]);
