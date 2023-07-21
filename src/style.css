@@ -55,9 +55,26 @@ form {
 }
 
 .grid-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 1px solid black;
 }
 
 .grid-item:hover {
     cursor: grab;
+}
+
+.circle-miss {
+    background-color: grey;
+    border-radius: 50%;
+    width: 30%;
+    height: 30%;
+}
+
+.circle-hit {
+    background-color: red;
+    border-radius: 50%;
+    width: 30%;
+    height: 30%;
 }
