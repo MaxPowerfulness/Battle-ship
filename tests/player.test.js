@@ -1,4 +1,4 @@
-const player = require('../src/player');
+import { player } from '../src/player';
 const player1 = player('Player1');
 const player2 = player('Player2');
 
