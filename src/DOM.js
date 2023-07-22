@@ -50,12 +50,18 @@ function displayGame() {
     main.append(nameContainer, gridContainer);
     nameContainer.append(player1Name, player2Name);
     gridContainer.append(player1Grid, player2Grid);
+
+    player2Grid.gameData.playerBoard.placeShip([1, 3], [1, 6], 4, 'big ship');
+    console.log(
+        'computer board',
+        player2Grid.gameData.playerBoard.boardInformation,
+    );
 }
 
 // A function that takes each player's grid element as parameters. Assigns coordinates to each grid item as well as click-to-attack capabilities for the enemy board.
 function createGrid(player1Grid, player2Grid) {
     let x = 0;
-    let y = 0;
+    let y = -1;
     for (let i = 0; i < 100; i++) {
         x++;
         if (i % 10 === 0) {
@@ -75,8 +81,6 @@ function createGrid(player1Grid, player2Grid) {
             item.setAttribute('data-y', y);
         });
 
-        // Add event listner for player1 grid
-
         // Event listener for player2 grid
         gridItems[1].addEventListener('click', () => {
             // Sends an attack to the players board based on the grid location clicked
@@ -90,7 +94,7 @@ function createGrid(player1Grid, player2Grid) {
                 `${gridItems[1].dataset.x}, ${gridItems[1].dataset.y}`,
             );
 
-            //Updtes grid item with red circle if hit, grey circle if miss
+            // Updates grid item with red circle if hit, grey circle if miss
             const hitMark = document.createElement('span');
             if (
                 `${gridItems[1].dataset.x}, ${gridItems[1].dataset.y}` ===
@@ -99,17 +103,56 @@ function createGrid(player1Grid, player2Grid) {
                 ]
             ) {
                 hitMark.classList.add('circle-miss');
-                gridItems[1].append(hitMark);
             } else {
-                gridItems[1].classList.add('circle-hit');
+                hitMark.classList.add('circle-hit');
             }
+            gridItems[1].append(hitMark);
 
-            gridItems[1].style['pointerEvents'] = 'none';
+            // After the player's move, the computer attacks. Computer grid click events are suspended until it is player's move again. Brief pause is given between turns
+            player2Grid.querySelectorAll('div').forEach((gridItem) => {
+                gridItem.style['pointerEvents'] = 'none';
+            });
+            setTimeout(() => {
+                computerAttack(player1Grid, player2Grid);
+                player2Grid.querySelectorAll('div').forEach((gridItem) => {
+                    if (gridItem.firstChild) {
+                        return;
+                    } else {
+                        gridItem.style['pointerEvents'] = 'all';
+                    }
+                });
+            }, 2000);
         });
 
         player1Grid.appendChild(gridItems[0]);
         player2Grid.appendChild(gridItems[1]);
     }
+}
+
+// A function to create the computer's attack and mark the result on the player's grid
+function computerAttack(player1Grid, player2Grid) {
+    const computerAttack = player2Grid.gameData.randomAttackCoor(); // Random coordinate generated as the computer's move
+    player1Grid.gameData.playerBoard.recieveAttack(
+        computerAttack[0],
+        computerAttack[1],
+    );
+
+    const hitMark = document.createElement('span');
+    if (
+        `${computerAttack[0]}, ${computerAttack[1]}` ===
+        player1Grid.gameData.playerBoard.missedShots[
+            player1Grid.gameData.playerBoard.missedShots.length - 1
+        ]
+    ) {
+        hitMark.classList.add('circle-miss');
+    } else {
+        hitMark.classList.add('circle-hit');
+    }
+    document
+        .querySelectorAll(
+            `[data-x="${computerAttack[0]}"][data-y="${computerAttack[1]}"]`,
+        )[0]
+        .append(hitMark);
 }
 
 export { nameSelection };
