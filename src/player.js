@@ -10,10 +10,10 @@ const player = (name) => {
 
         const randomCoor = randomCoordinate(min, max);
 
-        if (movesMade.includes(randomCoor)) {
-            randomAttackCoor(min, max);
+        if (movesMade.includes(`${randomCoor[0]}, ${randomCoor[1]}`)) {
+            return randomAttackCoor(min, max);
         } else {
-            movesMade.push(randomCoor);
+            movesMade.push(`${randomCoor[0]}, ${randomCoor[1]}`);
             return randomCoor;
         }
     };
@@ -22,10 +22,11 @@ const player = (name) => {
 };
 
 // Function to create a random coordinate point. Each axis value of the coordinate points will between the min and max value, defaulted to 1 and 10 respectively.
-function randomCoordinate(min = 1, max = 10) {
-    return `${Math.floor(Math.random() * (max - min + 1)) + min}, ${
-        Math.floor(Math.random() * (max - min + 1)) + min
-    }`;
+function randomCoordinate(min = 0, max = 9) {
+    return [
+        Math.floor(Math.random() * (max - min + 1)) + min,
+        Math.floor(Math.random() * (max - min + 1)) + min,
+    ];
 }
 
 export { player };
