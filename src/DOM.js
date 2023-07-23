@@ -16,10 +16,10 @@ function nameSelection() {
     label.textContent = 'Name:';
     startgame.setAttribute('type', 'button');
     startgame.textContent = 'Start Game';
-    startgame.addEventListener('click', () =>
-        // Function to save name to local storage
-        displayGame(),
-    );
+    startgame.addEventListener('click', () => {
+        localStorage.setItem('name', `${nameInput.value}`);
+        displayGame();
+    });
 
     main.appendChild(form);
     form.append(label, nameInput, startgame);
@@ -34,16 +34,16 @@ function displayGame() {
     const player1Grid = document.createElement('div');
     const player2Grid = document.createElement('div');
     // Creates and assigns gameboards to each grid
-    player1Grid.gameData = player('name'); //Get name from local storage
-    player2Grid.gameData = player('name');
+    player1Grid.gameData = player(localStorage.getItem('name')); //Get name from local storage
+    player2Grid.gameData = player('Computer');
 
     player1Grid.setAttribute('id', 'grid');
     player2Grid.setAttribute('id', 'grid');
     gridContainer.classList.add('grid-cont');
     nameContainer.classList.add('name-cont');
 
-    player1Name.textContent = 'placeholder'; // Get name from local Storage
-    player2Name.textContent = 'placeholder';
+    player1Name.textContent = localStorage.getItem('name'); // Get name from local Storage
+    player2Name.textContent = 'Admiral LongSnout';
 
     createGrid(player1Grid, player2Grid);
 
@@ -174,7 +174,15 @@ function computerAttack(player1Grid, player2Grid) {
 
 // Checks if all ships on the player's board are sunk
 function checkIfGameOver(board) {
-    if (board.gameData.playerBoard.statusOfShips()) displayGameOverScreen();
+    if (board.gameData.playerBoard.statusOfShips()) {
+        let winner = '';
+        if (board === 'player1Grid') {
+            winner = 'Admiral LongSnout';
+        } else {
+            winner = localStorage.getItem('name');
+        }
+        displayGameOverScreen(winner);
+    }
     return;
 }
 
