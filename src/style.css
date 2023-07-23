@@ -2,6 +2,7 @@
 :root {
     --default-font: 1rem;
     --small-spacing: 15px;
+    --border-radius: 20px;
 }
 
 /* General */
@@ -23,6 +24,10 @@ main {
     justify-content: center;
     align-items: center;
     height: 100%;
+}
+
+button:hover {
+    pointer-events: grab;
 }
 
 /* Name Menu */
@@ -77,4 +82,31 @@ form {
     border-radius: 50%;
     width: 30%;
     height: 30%;
+}
+
+/* Game over scree */
+.shader {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1;
+}
+
+.gameOverCont {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: cyan;
+    border-radius: var(--border-radius);
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    width: 25%;
+    height: 15%;
+    margin-left: -12.5%;
+    z-index: 2;
 }
