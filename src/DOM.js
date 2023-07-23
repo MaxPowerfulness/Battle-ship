@@ -50,6 +50,8 @@ function displayGame() {
     main.append(nameContainer, gridContainer);
     nameContainer.append(player1Name, player2Name);
     gridContainer.append(player1Grid, player2Grid);
+
+    player2Grid.gameData.playerBoard.placeShip([1, 3], [1, 4], 2, 'big'); // Test ship
 }
 
 // A function that takes each player's grid element as parameters. Assigns coordinates to each grid item as well as click-to-attack capabilities for the enemy board.
@@ -99,6 +101,7 @@ function createGrid(player1Grid, player2Grid) {
                 hitMark.classList.add('circle-miss');
             } else {
                 hitMark.classList.add('circle-hit');
+                checkIfGameOver(player2Grid);
             }
             gridItems[1].append(hitMark);
 
@@ -123,6 +126,25 @@ function createGrid(player1Grid, player2Grid) {
     }
 }
 
+// Displays winner of game with option to play again
+function displayGameOverScreen(winner) {
+    const shader = document.createElement('div');
+    const container = document.createElement('div');
+    const message = document.createElement('p');
+    const reset = document.createElement('button');
+
+    shader.classList.add('shader');
+    container.classList.add('gameOverCont');
+
+    message.textContent = `${winner} wins!`;
+    reset.textContent = 'Play again';
+
+    reset.addEventListener('click', () => displayGame());
+
+    container.append(message, reset);
+    main.append(shader, container);
+}
+
 // A function to create the computer's attack and mark the result on the player's grid
 function computerAttack(player1Grid, player2Grid) {
     const computerAttack = player2Grid.gameData.randomAttackCoor(); // Random coordinate generated as the computer's move
@@ -141,12 +163,19 @@ function computerAttack(player1Grid, player2Grid) {
         hitMark.classList.add('circle-miss');
     } else {
         hitMark.classList.add('circle-hit');
+        checkIfGameOver(player1Grid);
     }
     document
         .querySelectorAll(
             `[data-x="${computerAttack[0]}"][data-y="${computerAttack[1]}"]`,
         )[0]
         .append(hitMark);
+}
+
+// Checks if all ships on the player's board are sunk
+function checkIfGameOver(board) {
+    if (board.gameData.playerBoard.statusOfShips()) displayGameOverScreen();
+    return;
 }
 
 export { nameSelection };
