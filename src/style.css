@@ -2,6 +2,7 @@
 :root {
     --default-font: 1rem;
     --small-spacing: 15px;
+    --padding: 15px;
     --border-radius: 20px;
 }
 
@@ -30,12 +31,26 @@ button:hover {
     pointer-events: grab;
 }
 
+#gridCont {
+    background-color: bisque;
+    padding: var(--padding);
+    border-radius: var(--border-radius);
+    border: 3px solid black;
+}
+
 /* Name Menu */
 form {
     display: flex;
     flex-direction: column;
 }
 
+/* Ship placement menu */
+.ship-placement-cont {
+}
+
+.hover {
+    background-color: rgba(34, 189, 78, 0.6);
+}
 /* Game menu */
 #grid {
     display: grid;
@@ -54,12 +69,12 @@ form {
     width: 1015px; /*Change this when resizing grid sizes*/
 }
 
-.grid-cont {
+.player-grid-cont {
     display: flex;
     gap: var(--small-spacing);
 }
 
-.grid-item {
+#gridItem {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -84,7 +99,7 @@ form {
     height: 30%;
 }
 
-/* Game over scree */
+/* Game over screen */
 .shader {
     position: fixed;
     top: 0px;
