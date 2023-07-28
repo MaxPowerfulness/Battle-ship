@@ -3,6 +3,8 @@ import { player } from './player';
 //Global variables
 const main = document.querySelector('main');
 
+// DOM creation
+
 // Creates menu to select your name
 function nameSelection() {
     const form = document.createElement('form');
@@ -18,11 +20,69 @@ function nameSelection() {
     startgame.textContent = 'Start Game';
     startgame.addEventListener('click', () => {
         localStorage.setItem('name', `${nameInput.value}`);
-        displayGame();
+        shipPlacement();
+        //displayGame();
     });
 
     main.appendChild(form);
     form.append(label, nameInput, startgame);
+}
+
+function shipPlacement() {
+    main.textContent = ''; // Clears main
+    const shipList = ['Carrier', 'Battleship', 'Destroyer', 'Submarine', 'Patrolboat'];
+
+    const container = document.createElement('div');
+    const btnCont = document.createElement('header');
+    const rotateBtn = document.createElement('button');
+    const gridCont = document.createElement('div');
+    const grid = document.createElement('div');
+
+    btnCont.setAttribute('id', 'header');
+    gridCont.setAttribute('id', 'gridCont');
+    gridCont.classList.add('ship-placement-cont');
+    grid.setAttribute('id', 'grid');
+
+    rotateBtn.textContent = 'Rotate';
+    rotateBtn.value = 'x';
+
+    // Grid UI creation for player ship placement choice
+    let x = 0;
+    let y = -1;
+    for (let i = 0; i < 100; i++) {
+        x++;
+        if (i % 10 === 0) {
+            x = 0;
+            y++;
+        }
+        const gridItem = document.createElement('div');
+
+        // Assigns coordinates to each grid item
+        gridItem.setAttribute('id', 'gridItem');
+        gridItem.setAttribute('data-x', x);
+        gridItem.setAttribute('data-y', y);
+
+        grid.appendChild(gridItem);
+    }
+
+    shipList.forEach((ship) => {
+        const boat = document.createElement('button');
+        boat.textContent = `${ship}`;
+        boat.addEventListener('click', () => {
+            const gridItems = document.querySelectorAll('#gridItem');
+            gridItems.forEach((item) => {
+                item.removeAttribute('class');
+                item.classList.add(`${ship}`);
+            });
+            placeShipOnGrid(ship, rotateBtn);
+        });
+        gridCont.appendChild(boat);
+    });
+
+    btnCont.appendChild(rotateBtn);
+    gridCont.append(grid);
+    container.append(btnCont, gridCont);
+    main.appendChild(container);
 }
 
 function displayGame() {
@@ -33,16 +93,17 @@ function displayGame() {
     const player2Name = document.createElement('p');
     const player1Grid = document.createElement('div');
     const player2Grid = document.createElement('div');
+
     // Creates and assigns gameboards to each grid
-    player1Grid.gameData = player(localStorage.getItem('name')); //Get name from local storage
+    player1Grid.gameData = player(localStorage.getItem('name'));
     player2Grid.gameData = player('Computer');
 
     player1Grid.setAttribute('id', 'grid');
     player2Grid.setAttribute('id', 'grid');
-    gridContainer.classList.add('grid-cont');
+    gridContainer.classList.add('player-grid-cont');
     nameContainer.classList.add('name-cont');
 
-    player1Name.textContent = localStorage.getItem('name'); // Get name from local Storage
+    player1Name.textContent = localStorage.getItem('name');
     player2Name.textContent = 'Admiral LongSnout';
 
     createGrid(player1Grid, player2Grid);
@@ -65,38 +126,28 @@ function createGrid(player1Grid, player2Grid) {
             y++;
         }
 
-        const gridItems = [
-            document.createElement('div'),
-            document.createElement('div'),
-        ];
+        const gridItems = [document.createElement('div'), document.createElement('div')];
 
         // Assigns coordinates to each grid item
         gridItems.forEach((item) => {
-            item.classList.add('grid-item');
+            item.setAttribute('id', 'gridItem');
             item.setAttribute('data-x', x);
             item.setAttribute('data-y', y);
         });
 
-        // Event listener for player2 grid
+        // Event listener for computer grid
         gridItems[1].addEventListener('click', () => {
             // Sends an attack to the players board based on the grid location clicked
-            player2Grid.gameData.playerBoard.recieveAttack(
-                gridItems[1].dataset.x,
-                gridItems[1].dataset.y,
-            );
+            player2Grid.gameData.playerBoard.recieveAttack(gridItems[1].dataset.x, gridItems[1].dataset.y);
 
             // Updates moves made by player1
-            player1Grid.gameData.movesMade.push(
-                `${gridItems[1].dataset.x}, ${gridItems[1].dataset.y}`,
-            );
+            player1Grid.gameData.movesMade.push(`${gridItems[1].dataset.x}, ${gridItems[1].dataset.y}`);
 
             // Updates grid item with red circle if hit, grey circle if miss
             const hitMark = document.createElement('span');
             if (
                 `${gridItems[1].dataset.x}, ${gridItems[1].dataset.y}` ===
-                player2Grid.gameData.playerBoard.missedShots[
-                    player2Grid.gameData.playerBoard.missedShots.length - 1
-                ]
+                player2Grid.gameData.playerBoard.missedShots[player2Grid.gameData.playerBoard.missedShots.length - 1]
             ) {
                 hitMark.classList.add('circle-miss');
             } else {
@@ -145,31 +196,23 @@ function displayGameOverScreen(winner) {
     main.append(shader, container);
 }
 
+// Helper functions
+
 // A function to create the computer's attack and mark the result on the player's grid
 function computerAttack(player1Grid, player2Grid) {
     const computerAttack = player2Grid.gameData.randomAttackCoor(); // Random coordinate generated as the computer's move
-    player1Grid.gameData.playerBoard.recieveAttack(
-        computerAttack[0],
-        computerAttack[1],
-    );
+    player1Grid.gameData.playerBoard.recieveAttack(computerAttack[0], computerAttack[1]);
 
     const hitMark = document.createElement('span');
     if (
-        `${computerAttack[0]}, ${computerAttack[1]}` ===
-        player1Grid.gameData.playerBoard.missedShots[
-            player1Grid.gameData.playerBoard.missedShots.length - 1
-        ]
+        `${computerAttack[0]}, ${computerAttack[1]}` === player1Grid.gameData.playerBoard.missedShots[player1Grid.gameData.playerBoard.missedShots.length - 1]
     ) {
         hitMark.classList.add('circle-miss');
     } else {
         hitMark.classList.add('circle-hit');
         checkIfGameOver(player1Grid);
     }
-    document
-        .querySelectorAll(
-            `[data-x="${computerAttack[0]}"][data-y="${computerAttack[1]}"]`,
-        )[0]
-        .append(hitMark);
+    document.querySelectorAll(`[data-x="${computerAttack[0]}"][data-y="${computerAttack[1]}"]`)[0].append(hitMark);
 }
 
 // Checks if all ships on the player's board are sunk
@@ -184,6 +227,31 @@ function checkIfGameOver(board) {
         displayGameOverScreen(winner);
     }
     return;
+}
+
+function placeShipOnGrid(className, rotateBtn) {
+    const gridItems = document.querySelectorAll(`.${className}`);
+
+    gridItems.forEach((item) => {
+        item.addEventListener('mouseover', (event) => {
+            if (rotateBtn.value === 'x') {
+                switch (item.className) {
+                    case 'Carrier':
+                        if (Number(item.dataset.x) < 6) {
+                            item.classList.add('hover');
+                            let nextSib = item.nextElementSibling;
+                            for (let i = 0; i < 4; i++) {
+                                nextSib.classList.add('hover');
+                                nextSib = nextSib.nextElementSibling;
+                            }
+                        }
+                }
+            }
+        });
+        item.addEventListener('mouseout', (event) => {
+            gridItems.forEach((item) => item.classList.remove('hover'));
+        });
+    });
 }
 
 export { nameSelection };
