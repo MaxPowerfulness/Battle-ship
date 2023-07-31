@@ -45,6 +45,14 @@ function shipPlacement() {
 
     rotateBtn.textContent = 'Rotate';
     rotateBtn.value = 'x';
+    rotateBtn.addEventListener('click', () => {
+        if (rotateBtn.value === 'x') {
+            rotateBtn.value = 'y';
+        } else {
+            rotateBtn.value = 'x';
+        }
+        console.log(rotateBtn.value);
+    });
 
     // Grid UI creation for player ship placement choice
     let x = 0;
@@ -229,6 +237,8 @@ function checkIfGameOver(board) {
     return;
 }
 
+// Implements the hover effect on the placement grid and adds the ships to the specified coordinates.
+// Accepts the className of the grid items (which ship is being placed) and x-y rotation button as arguments.
 function placeShipOnGrid(className, rotateBtn) {
     const gridItems = document.querySelectorAll(`.${className}`);
 
@@ -237,14 +247,38 @@ function placeShipOnGrid(className, rotateBtn) {
             if (rotateBtn.value === 'x') {
                 switch (item.className) {
                     case 'Carrier':
-                        if (Number(item.dataset.x) < 6) {
-                            item.classList.add('hover');
-                            let nextSib = item.nextElementSibling;
-                            for (let i = 0; i < 4; i++) {
-                                nextSib.classList.add('hover');
-                                nextSib = nextSib.nextElementSibling;
-                            }
-                        }
+                        addHorizontalHoverEffect(item, 6, 4);
+                        break;
+                    case 'Battleship':
+                        addHorizontalHoverEffect(item, 7, 3);
+                        break;
+                    case 'Destroyer':
+                        addHorizontalHoverEffect(item, 8, 2);
+                        break;
+                    case 'Submarine':
+                        addHorizontalHoverEffect(item, 8, 2);
+                        break;
+                    case 'Patrolboat':
+                        addHorizontalHoverEffect(item, 9, 1);
+                        break;
+                }
+            } else {
+                switch (item.className) {
+                    case 'Carrier':
+                        addVerticalHoverEffect(gridItems, item, 6, 4);
+                        break;
+                    case 'Battleship':
+                        addVerticalHoverEffect(gridItems, item, 7, 3);
+                        break;
+                    case 'Destroyer':
+                        addVerticalHoverEffect(gridItems, item, 8, 2);
+                        break;
+                    case 'Submarine':
+                        addVerticalHoverEffect(gridItems, item, 8, 2);
+                        break;
+                    case 'Patrolboat':
+                        addVerticalHoverEffect(gridItems, item, 9, 1);
+                        break;
                 }
             }
         });
@@ -252,6 +286,30 @@ function placeShipOnGrid(className, rotateBtn) {
             gridItems.forEach((item) => item.classList.remove('hover'));
         });
     });
+}
+
+// Adds hovering effects to grid items to show ship placement. Accepts the grid item, the maximum x coordinate value for the hover effect to occur past,
+// and the number of grid items after the hovered item to display the effect
+function addHorizontalHoverEffect(gridItem, numLimit, numlength) {
+    if (Number(gridItem.dataset.x) < numLimit) {
+        gridItem.classList.add('hover');
+        let nextSib = gridItem.nextElementSibling;
+        for (let i = 0; i < numlength; i++) {
+            nextSib.classList.add('hover');
+            nextSib = nextSib.nextElementSibling;
+        }
+    }
+}
+
+function addVerticalHoverEffect(gridItems, gridItem, numLimit, numlength) {
+    if (Number(gridItem.dataset.y) < numLimit) {
+        gridItem.classList.add('hover');
+        let indexOfCurrent = Array.from(gridItems).indexOf(gridItem);
+        for (let i = 0; i < numlength; i++) {
+            indexOfCurrent += 10;
+            gridItems[indexOfCurrent].classList.add('hover');
+        }
+    }
 }
 
 export { nameSelection };
