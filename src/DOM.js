@@ -28,10 +28,12 @@ function nameSelection() {
     form.append(label, nameInput, startgame);
 }
 
+//
 function shipPlacement() {
     main.textContent = ''; // Clears main
     const shipList = ['Carrier', 'Battleship', 'Destroyer', 'Submarine', 'Patrolboat'];
 
+    // Ship placement DOM
     const container = document.createElement('div');
     const btnCont = document.createElement('header');
     const rotateBtn = document.createElement('button');
@@ -43,6 +45,7 @@ function shipPlacement() {
     gridCont.classList.add('ship-placement-cont');
     grid.setAttribute('id', 'grid');
 
+    // Rotate button to set orientation of ship placement
     rotateBtn.textContent = 'Rotate';
     rotateBtn.value = 'x';
     rotateBtn.addEventListener('click', () => {
@@ -51,7 +54,6 @@ function shipPlacement() {
         } else {
             rotateBtn.value = 'x';
         }
-        console.log(rotateBtn.value);
     });
 
     // Grid UI creation for player ship placement choice
@@ -73,6 +75,7 @@ function shipPlacement() {
         grid.appendChild(gridItem);
     }
 
+    // Create ship placement options for each ship type
     shipList.forEach((ship) => {
         const boat = document.createElement('button');
         boat.textContent = `${ship}`;
@@ -120,6 +123,11 @@ function displayGame() {
     nameContainer.append(player1Name, player2Name);
     gridContainer.append(player1Grid, player2Grid);
 
+    // Add ships to boards
+    Object.keys(localStorage).forEach((key) => {
+        let value = JSON.parse(localStorage.getItem(key));
+        player1Grid.gameData.playerBoard.placeShip[(value.start, value.end, value.length, `${key}`)];
+    });
     player2Grid.gameData.playerBoard.placeShip([1, 3], [1, 4], 2, 'big'); // Test ship
 }
 
@@ -242,55 +250,57 @@ function checkIfGameOver(board) {
 function placeShipOnGrid(className, rotateBtn) {
     const gridItems = document.querySelectorAll(`.${className}`);
 
+    // Changes grid highlight hover effect depending on selected ship type
     gridItems.forEach((item) => {
-        item.addEventListener('mouseover', (event) => {
+        item.addEventListener('mouseover', () => {
             if (rotateBtn.value === 'x') {
                 switch (item.className) {
                     case 'Carrier':
-                        addHorizontalHoverEffect(item, 6, 4);
+                        addHorizontalHoverEffect(item, 6, 4, 'Carrier');
                         break;
                     case 'Battleship':
-                        addHorizontalHoverEffect(item, 7, 3);
+                        addHorizontalHoverEffect(item, 7, 3, 'Battleship');
                         break;
                     case 'Destroyer':
-                        addHorizontalHoverEffect(item, 8, 2);
+                        addHorizontalHoverEffect(item, 8, 2, 'Destroyer');
                         break;
                     case 'Submarine':
-                        addHorizontalHoverEffect(item, 8, 2);
+                        addHorizontalHoverEffect(item, 8, 2, 'Submarine');
                         break;
                     case 'Patrolboat':
-                        addHorizontalHoverEffect(item, 9, 1);
+                        addHorizontalHoverEffect(item, 9, 1, 'Patrolboat');
                         break;
                 }
             } else {
                 switch (item.className) {
                     case 'Carrier':
-                        addVerticalHoverEffect(gridItems, item, 6, 4);
+                        addVerticalHoverEffect(gridItems, item, 6, 4, 'Carrier');
                         break;
                     case 'Battleship':
-                        addVerticalHoverEffect(gridItems, item, 7, 3);
+                        addVerticalHoverEffect(gridItems, item, 7, 3, 'Battleship');
                         break;
                     case 'Destroyer':
-                        addVerticalHoverEffect(gridItems, item, 8, 2);
+                        addVerticalHoverEffect(gridItems, item, 8, 2, 'Destroyer');
                         break;
                     case 'Submarine':
-                        addVerticalHoverEffect(gridItems, item, 8, 2);
+                        addVerticalHoverEffect(gridItems, item, 8, 2, 'Submarine');
                         break;
                     case 'Patrolboat':
-                        addVerticalHoverEffect(gridItems, item, 9, 1);
+                        addVerticalHoverEffect(gridItems, item, 9, 1, 'Patrolboat');
                         break;
                 }
             }
         });
-        item.addEventListener('mouseout', (event) => {
+        item.addEventListener('mouseout', () => {
             gridItems.forEach((item) => item.classList.remove('hover'));
         });
     });
 }
 
-// Adds hovering effects to grid items to show ship placement. Accepts the grid item, the maximum x coordinate value for the hover effect to occur past,
+// Adds hovering effects to grid items to show ship placement horizontally. Adds coordinates of ship to local storage.
+// Accepts the grid item, the maximum x coordinate value for the hover effect to occur past,
 // and the number of grid items after the hovered item to display the effect
-function addHorizontalHoverEffect(gridItem, numLimit, numlength) {
+function addHorizontalHoverEffect(gridItem, numLimit, numlength, className) {
     if (Number(gridItem.dataset.x) < numLimit) {
         gridItem.classList.add('hover');
         let nextSib = gridItem.nextElementSibling;
@@ -298,10 +308,24 @@ function addHorizontalHoverEffect(gridItem, numLimit, numlength) {
             nextSib.classList.add('hover');
             nextSib = nextSib.nextElementSibling;
         }
+        // Saves ship coordinate to local storage
+        gridItem.addEventListener('click', () => {
+            localStorage.setItem(
+                className,
+                JSON.stringify({
+                    start: [Number(gridItem.dataset.x), Number(gridItem.dataset.y)],
+                    end: [Number(gridItem.dataset.x) + numlength + 1, Number(gridItem.dataset.y)],
+                    length: numlength + 1,
+                }),
+            );
+        });
     }
 }
 
-function addVerticalHoverEffect(gridItems, gridItem, numLimit, numlength) {
+// Adds hovering effects to grid items to show ship placement verticaly. Adds coordinates of ship to local storage.
+// Accepts nodelist of all grid items, the grid item, the maximum y coordinate value for the hover effect to occur past,
+// and the number of grid items after the hovered item to display the effect
+function addVerticalHoverEffect(gridItems, gridItem, numLimit, numlength, className) {
     if (Number(gridItem.dataset.y) < numLimit) {
         gridItem.classList.add('hover');
         let indexOfCurrent = Array.from(gridItems).indexOf(gridItem);
@@ -309,6 +333,17 @@ function addVerticalHoverEffect(gridItems, gridItem, numLimit, numlength) {
             indexOfCurrent += 10;
             gridItems[indexOfCurrent].classList.add('hover');
         }
+        // Saves ship coordinate to local storage
+        gridItem.addEventListener('click', () => {
+            localStorage.setItem(
+                className,
+                JSON.stringify({
+                    start: [Number(gridItem.dataset.x), Number(gridItem.dataset.y)],
+                    end: [Number(gridItem.dataset.x), Number(gridItem.dataset.y) + numlength + 1],
+                    length: numlength + 1,
+                }),
+            );
+        });
     }
 }
 
