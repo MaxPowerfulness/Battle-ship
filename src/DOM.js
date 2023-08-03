@@ -20,7 +20,7 @@ function nameSelection() {
     startgame.textContent = 'Start Game';
     startgame.addEventListener('click', () => {
         localStorage.setItem('name', `${nameInput.value}`);
-        shipPlacement();
+        chooseShipPlacement();
         //displayGame();
     });
 
@@ -28,8 +28,8 @@ function nameSelection() {
     form.append(label, nameInput, startgame);
 }
 
-//
-function shipPlacement() {
+// Creates the DOM for the user to select where they want to place there ships.
+function chooseShipPlacement() {
     main.textContent = ''; // Clears main
     const shipList = ['Carrier', 'Battleship', 'Destroyer', 'Submarine', 'Patrolboat'];
 
@@ -81,11 +81,12 @@ function shipPlacement() {
         boat.textContent = `${ship}`;
         boat.addEventListener('click', () => {
             const gridItems = document.querySelectorAll('#gridItem');
+            console.log(gridItems);
             gridItems.forEach((item) => {
-                item.removeAttribute('class');
-                item.classList.add(`${ship}`);
+                item.value = ``;
+                item.value = `${ship}`;
             });
-            placeShipOnGrid(ship, rotateBtn);
+            implementHover(rotateBtn);
         });
         gridCont.appendChild(boat);
     });
@@ -94,6 +95,31 @@ function shipPlacement() {
     gridCont.append(grid);
     container.append(btnCont, gridCont);
     main.appendChild(container);
+
+    // Saves ship placement choice to local storage and displays where the user selected to set their ship
+    const gridItems = document.querySelectorAll('#gridItem');
+    gridItems.forEach((item) => {
+        item.addEventListener('click', () => {
+            const hovered = document.querySelectorAll('.hover');
+            let conditionMet = false;
+            for (let i = 0; i < hovered.length; i++) {
+                if (hovered[i].classList.contains('selected')) {
+                    conditionMet = true;
+                    break;
+                }
+                hovered[i].classList.add('selected');
+            }
+            if (conditionMet) return;
+            localStorage.setItem(
+                item.value,
+                JSON.stringify({
+                    start: [Number(hovered[0].dataset.x), Number(hovered[0].dataset.y)],
+                    end: [Number(hovered[hovered.length - 1].dataset.x), Number(hovered[hovered.length - 1].dataset.y)],
+                    length: 1,
+                }),
+            );
+        });
+    });
 }
 
 function displayGame() {
@@ -245,48 +271,47 @@ function checkIfGameOver(board) {
     return;
 }
 
-// Implements the hover effect on the placement grid and adds the ships to the specified coordinates.
-// Accepts the className of the grid items (which ship is being placed) and x-y rotation button as arguments.
-function placeShipOnGrid(className, rotateBtn) {
-    const gridItems = document.querySelectorAll(`.${className}`);
+// Implements the hover effect on the placement grid. Accepts x-y rotation button as arguments.
+function implementHover(rotateBtn) {
+    const gridItems = document.querySelectorAll('#gridItem');
 
     // Changes grid highlight hover effect depending on selected ship type
     gridItems.forEach((item) => {
         item.addEventListener('mouseover', () => {
             if (rotateBtn.value === 'x') {
-                switch (item.className) {
+                switch (item.value) {
                     case 'Carrier':
-                        addHorizontalHoverEffect(item, 6, 4, 'Carrier');
+                        addHorizontalHoverEffect(item, 6, 4);
                         break;
                     case 'Battleship':
-                        addHorizontalHoverEffect(item, 7, 3, 'Battleship');
+                        addHorizontalHoverEffect(item, 7, 3);
                         break;
                     case 'Destroyer':
-                        addHorizontalHoverEffect(item, 8, 2, 'Destroyer');
+                        addHorizontalHoverEffect(item, 8, 2);
                         break;
                     case 'Submarine':
-                        addHorizontalHoverEffect(item, 8, 2, 'Submarine');
+                        addHorizontalHoverEffect(item, 8, 2);
                         break;
                     case 'Patrolboat':
-                        addHorizontalHoverEffect(item, 9, 1, 'Patrolboat');
+                        addHorizontalHoverEffect(item, 9, 1);
                         break;
                 }
             } else {
-                switch (item.className) {
+                switch (item.value) {
                     case 'Carrier':
-                        addVerticalHoverEffect(gridItems, item, 6, 4, 'Carrier');
+                        addVerticalHoverEffect(gridItems, item, 6, 4);
                         break;
                     case 'Battleship':
-                        addVerticalHoverEffect(gridItems, item, 7, 3, 'Battleship');
+                        addVerticalHoverEffect(gridItems, item, 7, 3);
                         break;
                     case 'Destroyer':
-                        addVerticalHoverEffect(gridItems, item, 8, 2, 'Destroyer');
+                        addVerticalHoverEffect(gridItems, item, 8, 2);
                         break;
                     case 'Submarine':
-                        addVerticalHoverEffect(gridItems, item, 8, 2, 'Submarine');
+                        addVerticalHoverEffect(gridItems, item, 8, 2);
                         break;
                     case 'Patrolboat':
-                        addVerticalHoverEffect(gridItems, item, 9, 1, 'Patrolboat');
+                        addVerticalHoverEffect(gridItems, item, 9, 1);
                         break;
                 }
             }
@@ -297,10 +322,10 @@ function placeShipOnGrid(className, rotateBtn) {
     });
 }
 
-// Adds hovering effects to grid items to show ship placement horizontally. Adds coordinates of ship to local storage.
+// Adds hovering effects to grid items to show ship placement horizontally.
 // Accepts the grid item, the maximum x coordinate value for the hover effect to occur past,
 // and the number of grid items after the hovered item to display the effect
-function addHorizontalHoverEffect(gridItem, numLimit, numlength, className) {
+function addHorizontalHoverEffect(gridItem, numLimit, numlength) {
     if (Number(gridItem.dataset.x) < numLimit) {
         gridItem.classList.add('hover');
         let nextSib = gridItem.nextElementSibling;
@@ -308,24 +333,13 @@ function addHorizontalHoverEffect(gridItem, numLimit, numlength, className) {
             nextSib.classList.add('hover');
             nextSib = nextSib.nextElementSibling;
         }
-        // Saves ship coordinate to local storage
-        gridItem.addEventListener('click', () => {
-            localStorage.setItem(
-                className,
-                JSON.stringify({
-                    start: [Number(gridItem.dataset.x), Number(gridItem.dataset.y)],
-                    end: [Number(gridItem.dataset.x) + numlength + 1, Number(gridItem.dataset.y)],
-                    length: numlength + 1,
-                }),
-            );
-        });
     }
 }
 
-// Adds hovering effects to grid items to show ship placement verticaly. Adds coordinates of ship to local storage.
+// Adds hovering effects to grid items to show ship placement verticaly.
 // Accepts nodelist of all grid items, the grid item, the maximum y coordinate value for the hover effect to occur past,
 // and the number of grid items after the hovered item to display the effect
-function addVerticalHoverEffect(gridItems, gridItem, numLimit, numlength, className) {
+function addVerticalHoverEffect(gridItems, gridItem, numLimit, numlength) {
     if (Number(gridItem.dataset.y) < numLimit) {
         gridItem.classList.add('hover');
         let indexOfCurrent = Array.from(gridItems).indexOf(gridItem);
@@ -333,17 +347,6 @@ function addVerticalHoverEffect(gridItems, gridItem, numLimit, numlength, classN
             indexOfCurrent += 10;
             gridItems[indexOfCurrent].classList.add('hover');
         }
-        // Saves ship coordinate to local storage
-        gridItem.addEventListener('click', () => {
-            localStorage.setItem(
-                className,
-                JSON.stringify({
-                    start: [Number(gridItem.dataset.x), Number(gridItem.dataset.y)],
-                    end: [Number(gridItem.dataset.x), Number(gridItem.dataset.y) + numlength + 1],
-                    length: numlength + 1,
-                }),
-            );
-        });
     }
 }
 
