@@ -51,6 +51,10 @@ form {
 .hover {
     background-color: rgba(34, 189, 78, 0.6);
 }
+
+.selected {
+    background-color: aquamarine;
+}
 /* Game menu */
 #grid {
     display: grid;
