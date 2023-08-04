@@ -21,7 +21,6 @@ function nameSelection() {
     startgame.addEventListener('click', () => {
         localStorage.setItem('name', `${nameInput.value}`);
         chooseShipPlacement();
-        //displayGame();
     });
 
     main.appendChild(form);
@@ -76,21 +75,6 @@ function chooseShipPlacement() {
         grid.appendChild(gridItem);
     }
 
-    // Create ship placement options for each ship type
-    // shipList.forEach((ship) => {
-    //     const boat = document.createElement('button');
-    //     boat.textContent = `${ship}`;
-    //     boat.addEventListener('click', () => {
-    //         const gridItems = document.querySelectorAll('#gridItem');
-    //         gridItems.forEach((item) => {
-    //             item.value = ``;
-    //             item.value = `${ship}`;
-    //         });
-    //         implementHover(rotateBtn);
-    //     });
-    //     gridCont.appendChild(boat);
-    // });
-
     btnCont.appendChild(rotateBtn);
     gridCont.append(message, grid);
     container.append(btnCont, gridCont);
@@ -98,9 +82,10 @@ function chooseShipPlacement() {
 
     const gridItems = document.querySelectorAll('#gridItem');
 
-    function handleGridItemClick(item) {
+    // Takes in a grid Item as a paramter. Adds marker that displays where each ship has been added to the grid. Also saves the ship's location and length to local storage
+    function saveShipLocation(item) {
+        // Selects the hovered items and adds the selected class to mark the selection location
         const hovered = document.querySelectorAll('.hover');
-        console.log('hovred nodes', hovered);
         let conditionMet = false;
         for (let i = 0; i < hovered.length; i++) {
             if (hovered[i].classList.contains('selected')) {
@@ -110,16 +95,28 @@ function chooseShipPlacement() {
             hovered[i].classList.add('selected');
         }
         if (conditionMet) return;
+
+        //Determine ship length
+        let length = 0;
+        if (Number(hovered[0].dataset.x) === Number(hovered[hovered.length - 1].dataset.x)) {
+            length = 1 + Number(hovered[hovered.length - 1].dataset.y) - Number(hovered[0].dataset.y);
+        } else {
+            length = 1 + Number(hovered[hovered.length - 1].dataset.x) - Number(hovered[0].dataset.x);
+        }
+
+        // Saves data to local storage
         localStorage.setItem(
             item.value,
             JSON.stringify({
                 start: [Number(hovered[0].dataset.x), Number(hovered[0].dataset.y)],
                 end: [Number(hovered[hovered.length - 1].dataset.x), Number(hovered[hovered.length - 1].dataset.y)],
-                length: 1,
+                length: length,
             }),
         );
     }
 
+    // Takes in the shipList index as a paramter. Returns a promise that dynamically changes text to tell the user which ship is being placed.
+    // Also implements the hover effect and ship saving logic
     function placeShip(index) {
         return new Promise((resolve) => {
             message.textContent = `Place your ${shipList[index]}`;
@@ -127,8 +124,8 @@ function chooseShipPlacement() {
                 item.value = ``;
                 item.value = `${shipList[index]}`;
                 item.addEventListener('click', () => {
-                    handleGridItemClick(item);
-                    gridItems.forEach((item) => item.removeEventListener('click', handleGridItemClick));
+                    saveShipLocation(item);
+                    gridItems.forEach((item) => item.removeEventListener('click', saveShipLocation));
                     resolve();
                 });
             });
@@ -136,37 +133,16 @@ function chooseShipPlacement() {
         });
     }
 
+    // Cycles through each ship type
     placeShip(0)
         .then(() => placeShip(1))
         .then(() => placeShip(2))
         .then(() => placeShip(3))
-        .then(() => placeShip(4));
-
-    // Saves ship placement choice to local storage and displays where the user selected to set their ship
-    // gridItems.forEach((item) => {
-    //     item.addEventListener('click', () => {
-    //         const hovered = document.querySelectorAll('.hover');
-    //         let conditionMet = false;
-    //         for (let i = 0; i < hovered.length; i++) {
-    //             if (hovered[i].classList.contains('selected')) {
-    //                 conditionMet = true;
-    //                 break;
-    //             }
-    //             hovered[i].classList.add('selected');
-    //         }
-    //         if (conditionMet) return;
-    //         localStorage.setItem(
-    //             item.value,
-    //             JSON.stringify({
-    //                 start: [Number(hovered[0].dataset.x), Number(hovered[0].dataset.y)],
-    //                 end: [Number(hovered[hovered.length - 1].dataset.x), Number(hovered[hovered.length - 1].dataset.y)],
-    //                 length: 1,
-    //             }),
-    //         );
-    //     });
-    // });
+        .then(() => placeShip(4))
+        .then(() => displayGame());
 }
 
+// Displays the main game UI, which includes the user's and computer's board
 function displayGame() {
     main.textContent = '';
     const gridContainer = document.createElement('div');
@@ -196,6 +172,7 @@ function displayGame() {
 
     // Add ships to boards
     Object.keys(localStorage).forEach((key) => {
+        if (key === 'name') return;
         let value = JSON.parse(localStorage.getItem(key));
         player1Grid.gameData.playerBoard.placeShip[(value.start, value.end, value.length, `${key}`)];
     });
