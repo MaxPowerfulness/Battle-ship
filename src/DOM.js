@@ -37,6 +37,7 @@ function chooseShipPlacement() {
     const container = document.createElement('div');
     const btnCont = document.createElement('header');
     const rotateBtn = document.createElement('button');
+    const message = document.createElement('p');
     const gridCont = document.createElement('div');
     const grid = document.createElement('div');
 
@@ -76,50 +77,94 @@ function chooseShipPlacement() {
     }
 
     // Create ship placement options for each ship type
-    shipList.forEach((ship) => {
-        const boat = document.createElement('button');
-        boat.textContent = `${ship}`;
-        boat.addEventListener('click', () => {
-            const gridItems = document.querySelectorAll('#gridItem');
-            console.log(gridItems);
-            gridItems.forEach((item) => {
-                item.value = ``;
-                item.value = `${ship}`;
-            });
-            implementHover(rotateBtn);
-        });
-        gridCont.appendChild(boat);
-    });
+    // shipList.forEach((ship) => {
+    //     const boat = document.createElement('button');
+    //     boat.textContent = `${ship}`;
+    //     boat.addEventListener('click', () => {
+    //         const gridItems = document.querySelectorAll('#gridItem');
+    //         gridItems.forEach((item) => {
+    //             item.value = ``;
+    //             item.value = `${ship}`;
+    //         });
+    //         implementHover(rotateBtn);
+    //     });
+    //     gridCont.appendChild(boat);
+    // });
 
     btnCont.appendChild(rotateBtn);
-    gridCont.append(grid);
+    gridCont.append(message, grid);
     container.append(btnCont, gridCont);
     main.appendChild(container);
 
-    // Saves ship placement choice to local storage and displays where the user selected to set their ship
     const gridItems = document.querySelectorAll('#gridItem');
-    gridItems.forEach((item) => {
-        item.addEventListener('click', () => {
-            const hovered = document.querySelectorAll('.hover');
-            let conditionMet = false;
-            for (let i = 0; i < hovered.length; i++) {
-                if (hovered[i].classList.contains('selected')) {
-                    conditionMet = true;
-                    break;
-                }
-                hovered[i].classList.add('selected');
+
+    function handleGridItemClick(item) {
+        const hovered = document.querySelectorAll('.hover');
+        console.log('hovred nodes', hovered);
+        let conditionMet = false;
+        for (let i = 0; i < hovered.length; i++) {
+            if (hovered[i].classList.contains('selected')) {
+                conditionMet = true;
+                break;
             }
-            if (conditionMet) return;
-            localStorage.setItem(
-                item.value,
-                JSON.stringify({
-                    start: [Number(hovered[0].dataset.x), Number(hovered[0].dataset.y)],
-                    end: [Number(hovered[hovered.length - 1].dataset.x), Number(hovered[hovered.length - 1].dataset.y)],
-                    length: 1,
-                }),
-            );
+            hovered[i].classList.add('selected');
+        }
+        if (conditionMet) return;
+        localStorage.setItem(
+            item.value,
+            JSON.stringify({
+                start: [Number(hovered[0].dataset.x), Number(hovered[0].dataset.y)],
+                end: [Number(hovered[hovered.length - 1].dataset.x), Number(hovered[hovered.length - 1].dataset.y)],
+                length: 1,
+            }),
+        );
+    }
+
+    function placeShip(index) {
+        return new Promise((resolve) => {
+            message.textContent = `Place your ${shipList[index]}`;
+            gridItems.forEach((item) => {
+                item.value = ``;
+                item.value = `${shipList[index]}`;
+                item.addEventListener('click', () => {
+                    handleGridItemClick(item);
+                    gridItems.forEach((item) => item.removeEventListener('click', handleGridItemClick));
+                    resolve();
+                });
+            });
+            implementHover(rotateBtn);
         });
-    });
+    }
+
+    placeShip(0)
+        .then(() => placeShip(1))
+        .then(() => placeShip(2))
+        .then(() => placeShip(3))
+        .then(() => placeShip(4));
+
+    // Saves ship placement choice to local storage and displays where the user selected to set their ship
+    // gridItems.forEach((item) => {
+    //     item.addEventListener('click', () => {
+    //         const hovered = document.querySelectorAll('.hover');
+    //         let conditionMet = false;
+    //         for (let i = 0; i < hovered.length; i++) {
+    //             if (hovered[i].classList.contains('selected')) {
+    //                 conditionMet = true;
+    //                 break;
+    //             }
+    //             hovered[i].classList.add('selected');
+    //         }
+    //         if (conditionMet) return;
+    //         localStorage.setItem(
+    //             item.value,
+    //             JSON.stringify({
+    //                 start: [Number(hovered[0].dataset.x), Number(hovered[0].dataset.y)],
+    //                 end: [Number(hovered[hovered.length - 1].dataset.x), Number(hovered[hovered.length - 1].dataset.y)],
+    //                 length: 1,
+    //             }),
+    //         );
+    //     });
+    // });
 }
 
 function displayGame() {
