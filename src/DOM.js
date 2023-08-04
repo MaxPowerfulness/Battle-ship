@@ -2,6 +2,7 @@ import { player } from './player';
 
 //Global variables
 const main = document.querySelector('main');
+const shipList = ['Carrier', 'Battleship', 'Destroyer', 'Submarine', 'Patrolboat'];
 
 // DOM creation
 
@@ -30,7 +31,6 @@ function nameSelection() {
 // Creates the DOM for the user to select where they want to place there ships.
 function chooseShipPlacement() {
     main.textContent = ''; // Clears main
-    const shipList = ['Carrier', 'Battleship', 'Destroyer', 'Submarine', 'Patrolboat'];
 
     // Ship placement DOM
     const container = document.createElement('div');
@@ -170,13 +170,22 @@ function displayGame() {
     nameContainer.append(player1Name, player2Name);
     gridContainer.append(player1Grid, player2Grid);
 
-    // Add ships to boards
+    // Add ships to user's board
     Object.keys(localStorage).forEach((key) => {
         if (key === 'name') return;
         let value = JSON.parse(localStorage.getItem(key));
         player1Grid.gameData.playerBoard.placeShip[(value.start, value.end, value.length, `${key}`)];
     });
-    player2Grid.gameData.playerBoard.placeShip([1, 3], [1, 4], 2, 'big'); // Test ship
+
+    // Adds ships to computer's board
+    let length = 5;
+    shipList.forEach((ship) => {
+        const coors = getRandomArbitrary(0, 9, length);
+        console.log(coors);
+        player2Grid.gameData.playerBoard.placeShip(coors.startCoor, coors.endCoor, length, `${ship}`);
+        if (ship === 'Destroyer') return;
+        length--;
+    });
 }
 
 // A function that takes each player's grid element as parameters. Assigns coordinates to each grid item as well as click-to-attack capabilities for the enemy board.
@@ -372,6 +381,33 @@ function addVerticalHoverEffect(gridItems, gridItem, numLimit, numlength) {
             gridItems[indexOfCurrent].classList.add('hover');
         }
     }
+}
+
+// Returns random coordinates that are length "length"
+function getRandomArbitrary(min, max, length) {
+    const xy = Math.floor(Math.random() * (2 - 0) + 0);
+    let startCoor = [];
+    let endCoor = [];
+
+    startCoor.push(Math.floor(Math.random() * (max - min) + min));
+    startCoor.push(Math.floor(Math.random() * (max - min) + min));
+    if (xy === 0) {
+        if (startCoor[0] + length > 9) {
+            endCoor.push(startCoor[0] - length);
+        } else {
+            endCoor.push(startCoor[0] + length);
+        }
+        endCoor.push(startCoor[1]);
+    } else {
+        endCoor.push(startCoor[0]);
+        if (startCoor[1] + length > 9) {
+            endCoor.push(startCoor[1] - length);
+        } else {
+            endCoor.push(startCoor[1] + length);
+        }
+    }
+
+    return { startCoor, endCoor };
 }
 
 export { nameSelection };
