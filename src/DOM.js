@@ -199,6 +199,8 @@ function createGrid(player1Grid, player2Grid) {
             item.setAttribute('data-y', y);
         });
 
+        gridItems[1].style['cursor'] = 'grab';
+
         // Event listener for computer grid
         gridItems[1].addEventListener('click', () => {
             // Sends an attack to the players board based on the grid location clicked
