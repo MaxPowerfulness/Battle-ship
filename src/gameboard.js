@@ -13,16 +13,24 @@ const gameboard = () => {
 
         // Records all coordinates the ship spans on the gameboard as property names for shipname object
         if (startCord[0] === endCord[0]) {
-            for (let i = 0; i <= length - 1; i++) {
-                boardInformation[`${name}`]['location'][
-                    `${startX}, ${startY + i}`
-                ] = true;
+            if (startCord[1] < endCord[1]) {
+                for (let i = 0; i <= length - 1; i++) {
+                    boardInformation[`${name}`]['location'][`${startX}, ${startY + i}`] = true;
+                }
+            } else {
+                for (let i = 0; i <= length - 1; i++) {
+                    boardInformation[`${name}`]['location'][`${startX}, ${startY - i}`] = true;
+                }
             }
         } else {
-            for (let i = 0; i <= length - 1; i++) {
-                boardInformation[`${name}`]['location'][
-                    `${startX + i}, ${startY}`
-                ] = true;
+            if (startCord[0] < endCord[0]) {
+                for (let i = 0; i <= length - 1; i++) {
+                    boardInformation[`${name}`]['location'][`${startX + i}, ${startY}`] = true;
+                }
+            } else {
+                for (let i = 0; i <= length - 1; i++) {
+                    boardInformation[`${name}`]['location'][`${startX - i}, ${startY}`] = true;
+                }
             }
         }
     };
