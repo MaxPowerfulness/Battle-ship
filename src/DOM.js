@@ -186,15 +186,14 @@ function displayGame() {
     // Add ships to user's board
     Object.keys(localStorage).forEach((key) => {
         if (key === 'name') return;
-        let value = JSON.parse(localStorage.getItem(key));
-        player1Grid.gameData.playerBoard.placeShip[(value.start, value.end, value.length, `${key}`)];
+        const value = JSON.parse(localStorage.getItem(key));
+        player1Grid.gameData.playerBoard.placeShip(value.start, value.end, value.length, `${key}`);
     });
 
     // Adds ships to computer's board
     let length = 5;
     shipList.forEach((ship) => {
         const coors = getRandomArbitrary(0, 9, length);
-        console.log(coors);
         player2Grid.gameData.playerBoard.placeShip(coors.startCoor, coors.endCoor, length, `${ship}`);
         if (ship === 'Destroyer') return;
         length--;
@@ -278,7 +277,7 @@ function displayGameOverScreen(winner) {
     message.textContent = `${winner} wins!`;
     reset.textContent = 'Play again';
 
-    reset.addEventListener('click', () => displayGame());
+    reset.addEventListener('click', () => chooseShipPlacement());
 
     container.append(message, reset);
     main.append(shader, container);
