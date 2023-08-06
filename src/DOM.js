@@ -81,9 +81,10 @@ function chooseShipPlacement() {
     main.appendChild(container);
 
     const gridItems = document.querySelectorAll('#gridItem');
+    let shipListIndex = 0;
 
-    // Takes in a grid Item as a paramter. Adds marker that displays where each ship has been added to the grid. Also saves the ship's location and length to local storage
-    function saveShipLocation(item) {
+    // Takes in a grid Item as a paramter. Adds marker that displays where each ship has been added to the grid. Also saves the ship's location and length to local storage. This runs on gridItem click
+    function saveShipLocation() {
         // Selects the hovered items and adds the selected class to mark the selection location
         const hovered = document.querySelectorAll('.hover');
         let conditionMet = false;
@@ -92,9 +93,9 @@ function chooseShipPlacement() {
                 conditionMet = true;
                 break;
             }
-            hovered[i].classList.add('selected');
         }
-        if (conditionMet) return;
+        if (conditionMet) return false;
+        hovered.forEach((gridItem) => gridItem.classList.add('selected'));
 
         //Determine ship length
         let length = 0;
@@ -106,31 +107,43 @@ function chooseShipPlacement() {
 
         // Saves data to local storage
         localStorage.setItem(
-            item.value,
+            shipList[shipListIndex],
             JSON.stringify({
                 start: [Number(hovered[0].dataset.x), Number(hovered[0].dataset.y)],
                 end: [Number(hovered[hovered.length - 1].dataset.x), Number(hovered[hovered.length - 1].dataset.y)],
                 length: length,
             }),
         );
+        shipListIndex++;
+        return true;
     }
 
     // Takes in the shipList index as a paramter. Returns a promise that dynamically changes text to tell the user which ship is being placed.
     // Also implements the hover effect and ship saving logic
     function placeShip(index) {
-        return new Promise((resolve) => {
+        let resolvePlaceShip;
+        const shipPlacementPromise = new Promise((resolve) => {
+            resolvePlaceShip = resolve; // Capture the resolve function
             message.textContent = `Place your ${shipList[index]}`;
             gridItems.forEach((item) => {
                 item.value = ``;
                 item.value = `${shipList[index]}`;
-                item.addEventListener('click', () => {
-                    saveShipLocation(item);
-                    gridItems.forEach((item) => item.removeEventListener('click', saveShipLocation));
-                    resolve();
-                });
+                item.addEventListener('click', handleGridClick);
             });
             implementHover(rotateBtn);
         });
+
+        // Executes when a gridItem is clicked. Saves the placed ship's location or requries the user to select a new location if an error occurs
+        function handleGridClick() {
+            if (saveShipLocation()) {
+                gridItems.forEach((item) => item.removeEventListener('click', handleGridClick));
+                resolvePlaceShip();
+            } else {
+                alert('Choose another location');
+            }
+        }
+
+        return shipPlacementPromise;
     }
 
     // Cycles through each ship type
