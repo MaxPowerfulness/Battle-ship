@@ -1,22 +1,55 @@
+@font-face {
+    font-family: 'tipografia';
+    src: url('./assests/tipografia.ttf');
+}
+
+@font-face {
+    font-family: 'am';
+    src: url('./assests/Amagro-bold.ttf');
+}
+
 /* Custom Properties */
 :root {
     --default-font: 1rem;
     --small-spacing: 15px;
-    --padding: 15px;
+    --large-spacing: 30px;
+    --small-padding: 15px;
+    --large-padding: 50px;
     --border-radius: 20px;
+    --white: rgb(255, 253, 250);
 }
 
-/* General */
-
+/* CSS reset and general rules */
 * {
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
+    font-family: 'am', 'tipografia', sans-serif, 'Times New Roman', Times, serif;
     font-size: var(--default-font);
 }
 
-body {
+html {
     height: 100vh;
+    background: url('./assests/old-concrete-texture-with-blue-paint.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10vh;
+    margin: var(--small-spacing);
+}
+
+header p {
+    font-size: 3rem;
+    padding: var(--small-padding);
+
+    border: 3px solid var(--white);
+    border-radius: var(--border-radius);
+    color: var(--white);
+    background-color: rgb(0, 0, 0, 0.3);
 }
 
 main {
@@ -24,16 +57,24 @@ main {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    height: 85vh;
+}
+
+footer {
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    color: var(--white);
 }
 
 button:hover {
-    pointer-events: grab;
+    cursor: grab;
 }
 
 #gridCont {
     background-color: bisque;
-    padding: var(--padding);
+    padding: var(--small-padding);
     border-radius: var(--border-radius);
     border: 3px solid black;
 }
@@ -42,6 +83,21 @@ button:hover {
 form {
     display: flex;
     flex-direction: column;
+    border: 3px solid var(--white);
+    border-radius: var(--border-radius);
+    padding: var(--large-padding);
+    color: var(--white);
+    background-color: rgb(0, 0, 0, 0.3);
+}
+
+.start-btn {
+    margin-top: var(--large-spacing);
+    width: 50%;
+}
+
+.start-btn-cont {
+    display: flex;
+    justify-content: center;
 }
 
 /* Ship placement menu */
