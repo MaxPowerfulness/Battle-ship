@@ -11,21 +11,25 @@ function nameSelection() {
     const form = document.createElement('form');
     const label = document.createElement('label');
     const nameInput = document.createElement('input'); // save name to local storage, retrieve it later
-    const startgame = document.createElement('button');
+    const startGame = document.createElement('button');
+    const btnCont = document.createElement('div');
 
     nameInput.setAttribute('id', 'name'); // save name local storage
     nameInput.setAttribute('placeholder', 'Choose a name');
     label.setAttribute('for', 'name');
     label.textContent = 'Name:';
-    startgame.setAttribute('type', 'button');
-    startgame.textContent = 'Start Game';
-    startgame.addEventListener('click', () => {
+    startGame.setAttribute('type', 'button');
+    startGame.classList.add('start-btn');
+    startGame.textContent = 'Start Game';
+    startGame.addEventListener('click', () => {
         localStorage.setItem('name', `${nameInput.value}`);
         chooseShipPlacement();
     });
+    btnCont.classList.add('start-btn-cont');
 
     main.appendChild(form);
-    form.append(label, nameInput, startgame);
+    btnCont.appendChild(startGame);
+    form.append(label, nameInput, btnCont);
 }
 
 // Creates the DOM for the user to select where they want to place there ships.
