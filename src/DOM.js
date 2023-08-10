@@ -2,7 +2,9 @@ import { player } from './player';
 
 //Global variables
 const main = document.querySelector('main');
+const html = document.querySelector('html');
 const shipList = ['Carrier', 'Battleship', 'Destroyer', 'Submarine', 'Patrolboat'];
+const battleshipText = document.querySelector('.header-text-selection');
 
 // DOM creation
 
@@ -10,11 +12,12 @@ const shipList = ['Carrier', 'Battleship', 'Destroyer', 'Submarine', 'Patrolboat
 function nameSelection() {
     const form = document.createElement('form');
     const label = document.createElement('label');
-    const nameInput = document.createElement('input'); // save name to local storage, retrieve it later
+    const nameInput = document.createElement('input');
     const startGame = document.createElement('button');
     const btnCont = document.createElement('div');
 
-    nameInput.setAttribute('id', 'name'); // save name local storage
+    html.setAttribute('id', 'selectionMenu');
+    nameInput.setAttribute('id', 'name');
     nameInput.setAttribute('placeholder', 'Choose a name');
     label.setAttribute('for', 'name');
     label.textContent = 'Name:';
@@ -38,14 +41,19 @@ function chooseShipPlacement() {
 
     // Ship placement DOM
     const container = document.createElement('div');
-    const btnCont = document.createElement('header');
+    const header = document.createElement('p');
     const rotateBtn = document.createElement('button');
     const message = document.createElement('p');
     const gridCont = document.createElement('div');
     const grid = document.createElement('div');
 
-    btnCont.setAttribute('id', 'header');
-    gridCont.setAttribute('id', 'gridCont');
+    html.setAttribute('id', 'gameMenu');
+    battleshipText.className = '';
+    battleshipText.classList.add('header-text-game');
+    header.setAttribute('class', 'placement-message');
+    message.classList.add('ship-place-text');
+    container.setAttribute('id', 'container');
+    rotateBtn.classList.add('rotate-btn');
     gridCont.classList.add('ship-placement-cont');
     grid.setAttribute('id', 'grid');
 
@@ -79,9 +87,9 @@ function chooseShipPlacement() {
         grid.appendChild(gridItem);
     }
 
-    btnCont.appendChild(rotateBtn);
-    gridCont.append(message, grid);
-    container.append(btnCont, gridCont);
+    header.appendChild(message);
+    gridCont.append(rotateBtn, grid);
+    container.append(header, gridCont);
     main.appendChild(container);
 
     const gridItems = document.querySelectorAll('#gridItem');
@@ -149,7 +157,6 @@ function chooseShipPlacement() {
 
         return shipPlacementPromise;
     }
-
     // Cycles through each ship type
     placeShip(0)
         .then(() => placeShip(1))
@@ -174,9 +181,13 @@ function displayGame() {
     player2Grid.gameData = player('Computer');
 
     player1Grid.setAttribute('id', 'grid');
+    player1Grid.classList.add('faded-in');
     player2Grid.setAttribute('id', 'grid');
-    gridContainer.classList.add('player-grid-cont');
-    nameContainer.classList.add('name-cont');
+    player2Grid.classList.add('faded-in');
+    player1Name.classList.add('name');
+    player2Name.classList.add('name');
+    gridContainer.classList.add('player-grid-cont', 'faded-in');
+    nameContainer.classList.add('name-cont', 'faded-in');
 
     player1Name.textContent = localStorage.getItem('name');
     player2Name.textContent = 'Admiral LongSnout';
@@ -277,6 +288,7 @@ function displayGameOverScreen(winner) {
 
     shader.classList.add('shader');
     container.classList.add('gameOverCont');
+    reset.classList.add('reset-btn');
 
     message.textContent = `${winner} wins!`;
     reset.textContent = 'Play again';
