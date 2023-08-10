@@ -8,15 +8,62 @@
     src: url('./assests/Amagro-bold.ttf');
 }
 
+@keyframes popout {
+    from {
+        transform: scale(0);
+    }
+    80% {
+        transform: scale(1.2);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+@-webkit-keyframes popout {
+    from {
+        transform: scale(0);
+    }
+    80% {
+        transform: scale(1.2);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0%;
+    }
+    to {
+        opacity: 100%;
+    }
+}
+
+@-webkit-keyframes fadeIn {
+    from {
+        opacity: 1%;
+    }
+    to {
+        opacity: 100%;
+    }
+}
+
 /* Custom Properties */
 :root {
     --default-font: 1rem;
     --small-spacing: 15px;
     --large-spacing: 30px;
+    --button-paddng: 3px 20px;
     --small-padding: 15px;
     --large-padding: 50px;
     --border-radius: 20px;
     --white: rgb(255, 253, 250);
+    --black: rgb(7, 6, 6);
+    --blue: rgb(61, 61, 206);
+    --grey: #b3b1af;
+    --red: #9f271e;
 }
 
 /* CSS reset and general rules */
@@ -30,26 +77,45 @@
 
 html {
     height: 100vh;
+}
+
+#selectionMenu {
     background: url('./assests/old-concrete-texture-with-blue-paint.jpg') no-repeat center center fixed;
     background-size: cover;
+}
+
+#gameMenu {
+    background: url('./assests/3200146.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+body {
 }
 
 header {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 10vh;
+    height: 15vh;
     margin: var(--small-spacing);
 }
 
-header p {
-    font-size: 3rem;
+.header-text-selection {
+    font-size: 4rem;
     padding: var(--small-padding);
-
     border: 3px solid var(--white);
     border-radius: var(--border-radius);
     color: var(--white);
     background-color: rgb(0, 0, 0, 0.3);
+}
+
+.header-text-game {
+    font-size: 4rem;
+    padding: var(--small-padding);
+    border: 3px solid var(--blue);
+    border-radius: var(--border-radius);
+    color: var(--white);
+    background: rgb(0, 0, 0, 0.3);
 }
 
 main {
@@ -57,7 +123,8 @@ main {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 85vh;
+    gap: var(--small-spacing);
+    height: 80vh;
 }
 
 footer {
@@ -68,15 +135,25 @@ footer {
     color: var(--white);
 }
 
+button {
+    width: fit-content;
+    padding: var(--button-paddng);
+    border-radius: var(--border-radius);
+}
+
 button:hover {
     cursor: grab;
 }
 
-#gridCont {
-    background-color: bisque;
+#container {
+    background-color: rgb(0, 0, 0, 0.3);
     padding: var(--small-padding);
     border-radius: var(--border-radius);
-    border: 3px solid black;
+    border: 3px solid var(--blue);
+}
+
+.faded-in {
+    animation: fadeIn ease 3s;
 }
 
 /* Name Menu */
@@ -88,11 +165,15 @@ form {
     padding: var(--large-padding);
     color: var(--white);
     background-color: rgb(0, 0, 0, 0.3);
+    margin-bottom: 150px;
 }
 
 .start-btn {
     margin-top: var(--large-spacing);
     width: 50%;
+    border: 3px solid var(--white);
+    background: rgb(0, 0, 0, 0.3);
+    color: var(--white);
 }
 
 .start-btn-cont {
@@ -102,6 +183,11 @@ form {
 
 /* Ship placement menu */
 .ship-placement-cont {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--small-spacing);
 }
 
 .hover {
@@ -111,12 +197,30 @@ form {
 .selected {
     background-color: aquamarine;
 }
+
+.ship-place-text {
+    font-size: 1.5rem;
+    color: var(--white);
+}
+
+.placement-message {
+    text-align: center;
+    padding: var(--small-padding);
+}
+
+.reset-btn,
+.rotate-btn {
+    border: 3px solid var(--blue);
+    color: var(--white);
+    background: rgb(0, 0, 0, 0.3);
+}
 /* Game menu */
 #grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
 
-    background-color: aqua;
+    background-color: var(--blue);
+    border: 3px solid var(--black);
 
     flex-grow: 1;
     height: 500px;
@@ -127,6 +231,11 @@ form {
     display: flex;
     justify-content: space-between;
     width: 1015px; /*Change this when resizing grid sizes*/
+}
+
+.name {
+    color: var(--white);
+    font-size: 1.2rem;
 }
 
 .player-grid-cont {
@@ -146,14 +255,14 @@ form {
 }
 
 .circle-miss {
-    background-color: grey;
+    background-color: var(--grey);
     border-radius: 50%;
     width: 30%;
     height: 30%;
 }
 
 .circle-hit {
-    background-color: red;
+    background-color: var(--red);
     border-radius: 50%;
     width: 30%;
     height: 30%;
@@ -175,8 +284,11 @@ form {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    background: cyan;
+    gap: var(--small-spacing);
+    background: var(--black);
+    color: var(--white);
     border-radius: var(--border-radius);
+    border: 3px solid var(--blue);
     position: fixed;
     top: 30%;
     left: 50%;
@@ -184,4 +296,7 @@ form {
     height: 15%;
     margin-left: -12.5%;
     z-index: 2;
+
+    animation: popout 1s ease;
+    -webkit-animation: popout 1s ease;
 }
