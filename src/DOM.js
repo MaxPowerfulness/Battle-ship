@@ -198,6 +198,9 @@ function displayGame() {
     nameContainer.append(player1Name, player2Name);
     gridContainer.append(player1Grid, player2Grid);
 
+    // Clear local storage
+    localStorage.clear();
+
     // Add ships to user's board
     Object.keys(localStorage).forEach((key) => {
         if (key === 'name') return;
